@@ -123,4 +123,9 @@ kubectl apply -f deployment.yaml                 #создание деплоя 
 ```bash
 kubectl set image deployment qa-deployment app=app:v2.0
 ```
+---
+# Для быстрого отката на предыдущую версию можно использовать команду 
+```bash
+kubectl rollout undo deployment qa-deployment
+```
 
