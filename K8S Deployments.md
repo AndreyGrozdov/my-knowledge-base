@@ -90,7 +90,7 @@ spec:
 - ⚠️ Временная несовместимость - две версии работают одновременно
 
 ## Recreate Strategy
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
