@@ -53,11 +53,11 @@ ________________________________________________________________________________
 # Команды:
 
 ```bash
-kubectl create -f deployment.yaml                                             #создание деплоя из ямл файла   можно подставить --record для записи измкенений
-kubectl get deployment                                                                #Посмотреть созданный деплой
-kubectl rollout status deployment qa-deployment                #Посмотреть статус деплоя  (вместо qa-deployment подставить своё имя деплоя)
-kubectl get replicaset                                                                    #Посмотреть replicaset которую создал наш деплой
-kubectl delete deployment qa-deployment                            #Удалить деплоймент (вместо qa-deployment подставить своё имя деплоя)
+kubectl create -f deployment.yaml                #создание деплоя из ямл файла   можно подставить --record для записи измкенений
+kubectl get deployment                           #Посмотреть созданный деплой
+kubectl rollout status deployment qa-deployment  #Посмотреть статус деплоя  (вместо qa-deployment подставить своё имя деплоя)
+kubectl get replicaset                           #Посмотреть replicaset которую создал наш деплой
+kubectl delete deployment qa-deployment          #Удалить деплоймент (вместо qa-deployment подставить своё имя деплоя)
 ```
 ____________________________________________________________________________________________
 Стратегия обновления подов
