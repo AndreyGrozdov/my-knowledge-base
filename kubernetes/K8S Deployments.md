@@ -127,5 +127,6 @@ kubectl set image deployment qa-deployment app=app:v2.0
 # Для быстрого отката на предыдущую версию можно использовать команду 
 ```bash
 kubectl rollout undo deployment qa-deployment
+kubectl rollout status deployment qa-deployment  #Посмотреть статус деплоя  (вместо qa-deployment подставить своё имя деплоя)
 ```
 
