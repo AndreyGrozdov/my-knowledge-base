@@ -34,7 +34,7 @@ ________________________________________________________________________________
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-deployment
+  name: qa-deployment
 spec:
   replicas: 3
   selector:
