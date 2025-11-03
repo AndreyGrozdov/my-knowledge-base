@@ -31,23 +31,23 @@ Deployment создает и управляет двумя ReplicaSet'ами:
 - Zero-downtime deployments - приложение доступно throughout всего процесса обновления
 _________________________________________________________________________________________________
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: qa-deployment
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: app
-  template:
-    metadata:
-      labels:
-        app: app
-    spec:
-      containers:
-      - name: app
-        image: app:v1.0
+apiVersion: apps/v1          # Версия API для работы с Deployment
+kind: Deployment              # Тип ресурса - Deployment (управляет Pod'ами)
+metadata:                     # Метаданные ресурса
+  name: qa-deployment         # Имя Deployment (должно быть уникальным)
+spec:                         # Спецификация (желаемое состояние)
+  replicas: 3                 # Количество копий Pod'ов (реплик)
+  selector:                   # Селектор для поиска управляемых Pod'ов
+    matchLabels:              # Условия поиска по меткам
+      app: app                # Ищем Pod'ы с меткой app=app
+  template:                   # Шаблон для создания Pod'ов
+    metadata:                 # Метаданные Pod'ов
+      labels:                 # Метки для Pod'ов
+        app: app              # Метка app=app (должна совпадать с selector)
+    spec:                     # Спецификация Pod'ов
+      containers:             # Список контейнеров в Pod'е
+      - name: app             # Имя контейнера (нужно для обновлений)
+        image: app:v1.0       # Docker образ и его версия
 ```
 __________________________________________________________________________________________
 # Команды:
