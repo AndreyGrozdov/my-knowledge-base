@@ -60,3 +60,6 @@ kubectl get replicaset                           #Посмотреть replicase
 kubectl delete deployment qa-deployment          #Удалить деплоймент (вместо qa-deployment подставить своё имя деплоя)
 ```
 
+# Стратегия обновления подов
+- RollingUpdate -стратегия по умолчанию, удаляет старые поды и одновременно добавляет новые.
+- Recreate - удаляет все старые поды перед созданием новых
