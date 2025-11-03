@@ -1,3 +1,91 @@
+# ☸️ Команды для работы с Deployment
+
+## 🚀 Создание и удаление
+
+```bash
+# Создать или обновить Deployment из файла
+kubectl apply -f deployment.yaml
+
+# Удалить Deployment
+kubectl delete -f deployment.yaml
+kubectl delete deployment app-deployment
+```
+
+## 👀 Просмотр информации
+
+```bash
+# Посмотреть все Deployment
+kubectl get deployment
+
+# Подробная информация о Deployment
+kubectl describe deployment app-deployment
+
+# Посмотреть Pod'ы созданные Deployment
+kubectl get pods -l app=app-name
+```
+
+## 🔄 Обновление и откат
+
+```bash
+# Обновить образ в Deployment
+kubectl set image deployment/app-deployment app=app:v2.0
+
+# Показать историю изменений
+kubectl rollout history deployment app-deployment
+
+# Откатить на предыдущую версию
+kubectl rollout undo deployment app-deployment
+
+# Откатить на конкретную ревизию
+kubectl rollout undo deployment app-deployment --to-revision=2
+
+# Показать статус обновления/отката
+kubectl rollout status deployment app-deployment
+```
+
+## 📊 Масштабирование
+
+```bash
+# Увеличить количество реплик
+kubectl scale deployment app-deployment --replicas=5
+
+# Автоматическое масштабирование
+kubectl autoscale deployment app-deployment --min=2 --max=10 --cpu-percent=80
+```
+
+## 🎯 Быстрые команды
+
+```bash
+# Создать Deployment без YAML файла
+kubectl create deployment nginx --image=nginx:latest
+
+# Редактировать Deployment в реальном времени
+kubectl edit deployment app-deployment
+
+# Приостановить/возобновить обновления
+kubectl rollout pause deployment app-deployment
+kubectl rollout resume deployment app-deployment
+```
+
+## 💡 Полезные флаги
+
+```bash
+# Смотреть обновления в реальном времени
+kubectl get deployment -w
+
+# Показать дополнительные колонки
+kubectl get deployment -o wide
+
+# Показать в YAML формате
+kubectl get deployment app-deployment -o yaml
+```
+
+## ⚠️ Важно:
+- Замени `app-deployment` на имя своего Deployment
+- `apply` используй вместо `create` для повторных применений
+- Флаг `--record` устарел и не рекомендуется к использованию
+
+
 # Проблема обновления приложений
 Предположим, у нас есть приложение версии 1.0. Разработчики выпускают новую версию 2.0, которую мы собираем в Docker-образ и загружаем в registry. Теперь необходимо обновить все Pod'ы в кластере Kubernetes, чтобы они использовали новый образ 2.0.
 
