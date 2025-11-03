@@ -30,7 +30,7 @@ Deployment создает и управляет двумя ReplicaSet'ами:
 - Автоматический rollback - при неудачном обновлении автоматически возвращается к предыдущей версии
 - Zero-downtime deployments - приложение доступно throughout всего процесса обновления
 _________________________________________________________________________________________________
-apiVersion: apps/v1
+'apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: app-deployment
@@ -46,7 +46,7 @@ spec:
     spec:
       containers:
       - name: app
-        image: app:v1.0
+        image: app:v1.0'
 __________________________________________________________________________________________
 Команды: 
 kubectl create -f deployment.yaml                                             #создание деплоя из ямл файла   можно подставить --record для записи измкенений
