@@ -1,5 +1,5 @@
-#🐇 Полный список команд RabbitMQ (шпаргалка)
-##🔧 Управление сервисом (systemd)
+# 🐇 Полный список команд RabbitMQ (шпаргалка)
+## 🔧 Управление сервисом (systemd)
 bash
 sudo systemctl start rabbitmq-server      # запустить
 sudo systemctl stop rabbitmq-server       # остановить
