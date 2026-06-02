@@ -8,7 +8,9 @@ sudo systemctl status rabbitmq-server     # статус
 sudo systemctl enable rabbitmq-server     # автозагрузка
 sudo systemctl disable rabbitmq-server    # убрать из автозагрузки
 📊 Статус и диагностика
-bash
+```
+
+```bash
 sudo rabbitmqctl status                           # общий статус (версия, память, процессы)
 sudo rabbitmqctl status | head -5                 # только первые строки (быстрая проверка)
 sudo rabbitmq-diagnostics alarms                  # алармы (диск, память)
@@ -19,18 +21,18 @@ sudo rabbitmq-diagnostics check_local_alarms       # локальные алар
 bash
 ## Список всех очередей с базовой информацией
 sudo rabbitmqctl list_queues
-
+```
 ## Очереди с количеством сообщений
-sudo rabbitmqctl list_queues name messages_ready messages_unacknowledged
+```sudo rabbitmqctl list_queues name messages_ready messages_unacknowledged```
 
 ## Очереди с потребителями
-sudo rabbitmqctl list_queues name consumers
+```sudo rabbitmqctl list_queues name consumers```
 
 ## Полная информация об очереди
-sudo rabbitmqctl list_queues name messages_ready messages_unacknowledged consumers memory
+```sudo rabbitmqctl list_queues name messages_ready messages_unacknowledged consumers memory```
 
 ## Очистить очередь (удалить все сообщения)
-sudo rabbitmqctl purge_queue имя_очереди
+```sudo rabbitmqctl purge_queue имя_очереди```
 
 ## Удалить очередь целиком
 sudo rabbitmqctl delete_queue имя_очереди
