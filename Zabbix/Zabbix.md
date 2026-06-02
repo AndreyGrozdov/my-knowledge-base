@@ -1,5 +1,5 @@
 ## 🎯 Основные метрики (ключи) Zabbix агента
-
+```
 agent.ping                                       # проверка доступности (1 - OK)
 system.hostname                                  # имя хоста
 system.uname                                     # информация о системе (uname -a)
@@ -22,3 +22,4 @@ net.tcp.port[192.168.1.1,80]                     # доступен ли пор�
 proc.num[nginx]                                  # количество процессов nginx
 log[/var/log/messages]                           # мониторинг лог-файла
 logrt[/var/log/app/*.log,"ERROR"]                # мониторинг логов с ротацией
+```
