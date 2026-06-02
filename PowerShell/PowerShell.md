@@ -231,6 +231,255 @@ Get-EventLog               ожидаемые      много ошибок (WARN
 Get-WmiObject              данные получены Access denied, Not found
 свободное место (Get-PSDrive) > 20%       < 10% (диск полон)
 ```
-Основано на официальной документации Microsoft PowerShell.
-Для более детального изучения: Get-Help command
-или официальная документация: https://docs.microsoft.com/en-us/powershell
+# 🪟 Работа с Active Directory через PowerShell (шпаргалка)
+
+## 📦 Подключение модуля AD и основные команды
+```
+Import-Module ActiveDirectory                      # импортировать модуль AD (обязательно перед работой)
+Get-Command -Module ActiveDirectory                # список всех команд модуля AD
+Get-Help Get-ADUser                                 # справка по команде
+```
+## 🔐 Настройка подключения к AD (если нужно указать конкретный контроллер)
+```
+Set-ADDefaultDomainPasswordPolicy                  # установить политику паролей по умолчанию
+Get-ADDefaultDomainPasswordPolicy                  # получить политику паролей по умолчанию
+
+Set-ADDomain                                        # изменить свойства домена
+Get-ADDomain                                        # получить информацию о домене
+Get-ADDomain | Select-Object DNSRoot, NetBIOSName, DomainMode  # основные параметры домена
+
+Set-ADForest                                        # изменить свойства леса
+Get-ADForest                                        # получить информацию о лесе
+Get-ADForest | Select-Object Name, RootDomain, ForestMode, Domains  # информация о лесе
+
+Get-ADDomainController                              # получить информацию о контроллерах домена
+Get-ADDomainController | Select-Object Name, Site, IPv4Address, OperationMasterRoles  # список DC и их роли
+
+Move-ADDirectoryServer                              # переместить DC в другой сайт
+Move-ADDirectoryServerOperationMasterRole           # переместить FSMO роли на другой DC
+```
+
+## 👥 Управление пользователями (Users)
+```
+Get-ADUser                                          # получить пользователя(ей)
+Get-ADUser -Identity "username"                     # получить конкретного пользователя
+Get-ADUser -Filter "Name -like '*ivan*'"            # найти пользователей по фильтру
+Get-ADUser -Filter * -SearchBase "OU=Users,DC=domain,DC=com"  # пользователи из конкретного OU
+Get-ADUser -Identity "username" -Properties *       # получить все свойства пользователя
+Get-ADUser -Filter * -Properties Name, Department, Title, Manager | Select Name, Department, Title, Manager  # выбрать нужные свойства
+
+New-ADUser                                          # создать нового пользователя
+New-ADUser -Name "John Doe" -GivenName "John" -Surname "Doe" -SamAccountName "jdoe" -UserPrincipalName "jdoe@domain.com" -Path "OU=Users,DC=domain,DC=com" -AccountPassword (ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force) -Enabled $true
+
+Set-ADUser                                          # изменить свойства пользователя
+Set-ADUser -Identity "jdoe" -Department "IT" -Title "Administrator" -OfficePhone "123-4567"
+Set-ADUser -Identity "jdoe" -Replace @{title="Manager";department="Sales"}  # замена нескольких атрибутов
+
+Remove-ADUser                                       # удалить пользователя
+Remove-ADUser -Identity "jdoe" -Confirm:$false      # удалить без подтверждения
+
+Enable-ADAccount                                    # включить учётную запись
+Enable-ADAccount -Identity "jdoe"
+
+Disable-ADAccount                                   # отключить учётную запись
+Disable-ADAccount -Identity "jdoe"
+
+Unlock-ADAccount                                    # разблокировать учётную запись
+Unlock-ADAccount -Identity "jdoe"
+
+Set-ADAccountPassword                               # сменить пароль
+Set-ADAccountPassword -Identity "jdoe" -Reset -NewPassword (ConvertTo-SecureString "NewP@ssw0rd" -AsPlainText -Force)
+
+Set-ADAccountExpiration                             # установить дату истечения срока действия учётной записи
+Clear-ADAccountExpiration                           # очистить дату истечения срока действия
+
+Search-ADAccount                                    # поиск учётных записей по критериям
+Search-ADAccount -AccountDisabled                   # найти отключённые учётные записи
+Search-ADAccount -AccountExpired                    # найти учётные записи с истекшим сроком
+Search-ADAccount -LockedOut                         # найти заблокированные учётные записи
+Search-ADAccount -PasswordExpired                   # найти учётные записи с истекшим паролем
+Search-ADAccount -UsersOnly                         # найти только пользователей
+
+Get-ADUserResultantPasswordPolicy                   # получить результирующую политику паролей для пользователя
+Get-ADUserResultantPasswordPolicy -Identity "jdoe"
+```
+
+## 👥 Управление группами (Groups)
+```
+Get-ADGroup                                         # получить группу(ы)
+Get-ADGroup -Identity "Domain Admins"               # получить конкретную группу
+Get-ADGroup -Filter "Name -like '*admins*'"         # найти группы по фильтру
+Get-ADGroup -Identity "Domain Admins" -Properties Members, MemberOf  # получить свойства группы
+
+New-ADGroup                                         # создать новую группу
+New-ADGroup -Name "IT Admins" -GroupCategory Security -GroupScope Global -DisplayName "IT Administrators" -Path "OU=Groups,DC=domain,DC=com"
+
+Set-ADGroup                                         # изменить свойства группы
+Set-ADGroup -Identity "IT Admins" -Description "Group for IT administrators"
+
+Remove-ADGroup                                      # удалить группу
+Remove-ADGroup -Identity "IT Admins" -Confirm:$false
+
+Get-ADGroupMember                                   # получить членов группы
+Get-ADGroupMember -Identity "Domain Admins"
+Get-ADGroupMember -Identity "Domain Admins" -Recursive  # рекурсивно (включая вложенные группы)
+
+Add-ADGroupMember                                   # добавить членов в группу
+Add-ADGroupMember -Identity "IT Admins" -Members "jdoe","asmith"
+Add-ADGroupMember -Identity "IT Admins" -Members (Get-ADUser -Filter "Department -eq 'IT'")  # добавить всех пользователей из отдела
+
+Remove-ADGroupMember                                # удалить членов из группы
+Remove-ADGroupMember -Identity "IT Admins" -Members "jdoe" -Confirm:$false
+
+Add-ADPrincipalGroupMembership                      # добавить пользователя в группы
+Add-ADPrincipalGroupMembership -Identity "jdoe" -MemberOf "IT Admins","VPN Users"
+
+Get-ADPrincipalGroupMembership                      # получить группы, в которые входит пользователь
+Get-ADPrincipalGroupMembership -Identity "jdoe"
+
+Remove-ADPrincipalGroupMembership                   # удалить пользователя из групп
+Remove-ADPrincipalGroupMembership -Identity "jdoe" -MemberOf "IT Admins" -Confirm:$false
+
+Get-ADAccountAuthorizationGroup                     # получить группы безопасности для пользователя (на основе токена)
+Get-ADAccountAuthorizationGroup -Identity "jdoe"
+```
+
+## 🖥️ Управление компьютерами (Computers)
+```
+Get-ADComputer                                      # получить компьютер(ы)
+Get-ADComputer -Identity "PC01"                     # получить конкретный компьютер
+Get-ADComputer -Filter "OperatingSystem -like '*Windows Server*'"  # найти серверы
+Get-ADComputer -Filter * -Properties OperatingSystem, LastLogonDate  # компьютеры с ОС и датой последнего входа
+
+New-ADComputer                                      # создать компьютер
+New-ADComputer -Name "PC01" -SamAccountName "PC01$" -Path "OU=Computers,DC=domain,DC=com"
+
+Set-ADComputer                                      # изменить свойства компьютера
+Set-ADComputer -Identity "PC01" -Description "Sales department computer"
+
+Remove-ADComputer                                   # удалить компьютер
+Remove-ADComputer -Identity "PC01" -Confirm:$false
+
+Enable-ADAccount                                    # включить компьютер
+Enable-ADAccount -Identity "PC01$"
+
+Disable-ADAccount                                   # отключить компьютер
+Disable-ADAccount -Identity "PC01$"
+
+Get-ADComputerServiceAccount                        # получить сервисные аккаунты компьютера
+Add-ADComputerServiceAccount                        # добавить сервисный аккаунт компьютеру
+Remove-ADComputerServiceAccount                     # удалить сервисный аккаунт компьютера
+```
+## 📁 Управление организационными единицами (OU)
+```
+Get-ADOrganizationalUnit                            # получить OU
+Get-ADOrganizationalUnit -Filter "Name -like '*Users*'"  # найти OU по имени
+Get-ADOrganizationalUnit -Identity "OU=Users,DC=domain,DC=com" -Properties ProtectedFromAccidentalDeletion
+
+New-ADOrganizationalUnit                            # создать OU
+New-ADOrganizationalUnit -Name "NewOU" -Path "DC=domain,DC=com" -Description "New organizational unit"
+
+Set-ADOrganizationalUnit                            # изменить OU
+Set-ADOrganizationalUnit -Identity "OU=NewOU,DC=domain,DC=com" -ProtectedFromAccidentalDeletion $true
+
+Remove-ADOrganizationalUnit                         # удалить OU
+Remove-ADOrganizationalUnit -Identity "OU=NewOU,DC=domain,DC=com" -Confirm:$false
+
+Move-ADObject                                       # переместить объект в другой OU
+Move-ADObject -Identity "CN=jdoe,OU=Users,DC=domain,DC=com" -TargetPath "OU=Leavers,DC=domain,DC=com"
+```
+
+## 🔧 Работа с общими объектами AD
+```
+Get-ADObject                                        # получить любой объект AD
+Get-ADObject -Identity "CN=jdoe,OU=Users,DC=domain,DC=com"
+Get-ADObject -Filter "ObjectClass -eq 'computer' -and Name -like 'PC*'"  # найти компьютеры по маске
+Get-ADObject -Filter "ObjectClass -eq 'user' -and WhenChanged -gt '2024-01-01'"  # пользователи, изменённые с даты
+Get-ADObject -Filter * -IncludeDeletedObjects        # включая удалённые объекты
+
+Move-ADObject                                       # переместить объект
+Rename-ADObject                                     # переименовать объект
+Rename-ADObject -Identity "CN=OldName,OU=Users,DC=domain,DC=com" -NewName "NewName"
+
+New-ADObject                                        # создать новый объект (нестандартный)
+New-ADObject -Name "NewContact" -Type "contact" -Path "OU=Contacts,DC=domain,DC=com"
+
+Remove-ADObject                                     # удалить объект
+Remove-ADObject -Identity "CN=OldUser,OU=Users,DC=domain,DC=com" -Confirm:$false
+
+Restore-ADObject                                    # восстановить удалённый объект
+Restore-ADObject -Identity "deleted-object-GUID"
+
+Set-ADObject                                        # изменить свойства объекта
+Set-ADObject -Identity "CN=SomeObject,DC=domain,DC=com" -Description "New description"
+```
+## 🔒 Политики и дополнительные функции
+```
+Get-ADFineGrainedPasswordPolicy                     # получить детализированные политики паролей
+New-ADFineGrainedPasswordPolicy                     # создать политику паролей
+New-ADFineGrainedPasswordPolicy -Name "HighSecurity" -Precedence 10 -ComplexityEnabled $true -MinPasswordLength 12 -LockoutThreshold 3 -LockoutDuration "00:30:00" -LockoutObservationWindow "00:30:00"
+
+Add-ADFineGrainedPasswordPolicySubject              # применить политику к пользователям/группам
+Add-ADFineGrainedPasswordPolicySubject -Identity "HighSecurity" -Subjects "jdoe","IT Admins"
+
+Get-ADFineGrainedPasswordPolicySubject              # получить объекты, к которым применена политика
+Remove-ADFineGrainedPasswordPolicySubject           # удалить применение политики
+
+Get-ADOptionalFeature                               # получить опциональные функции AD
+Enable-ADOptionalFeature                            # включить опциональную функцию
+Enable-ADOptionalFeature -Identity "Privileged Access Management Feature" -Scope ForestOrConfigurationSet -Target "domain.com"
+
+Disable-ADOptionalFeature                           # отключить опциональную функцию
+```
+## 🔄 Репликация и сайты
+```
+Get-ADReplicationSite                               # получить сайты репликации
+Get-ADReplicationSiteLink                           # получить связи между сайтами
+Get-ADReplicationSubnet                             # получить подсети
+Get-ADReplicationPartnerMetadata                    # получить метаданные репликации
+Get-ADReplicationAttributeMetadata                  # получить метаданные атрибутов
+Get-ADReplicationFailure                            # получить ошибки репликации
+Get-ADReplicationUpToDatenessVectorTable            # получить USN для контроллера домена
+
+Get-ADReplicationQueueOperation                     # получить операции в очереди репликации
+
+New-ADReplicationSite                               # создать сайт
+New-ADReplicationSubnet                             # создать подсеть
+New-ADReplicationSiteLink                           # создать связь между сайтами
+
+Set-ADReplicationSiteLink                           # изменить параметры связи
+
+Remove-ADReplicationSite                            # удалить сайт
+```
+## 🌐 Работа с несколькими доменами и лесами
+```
+Add-ADGroupMember -Identity "GroupInDomainA" -Members (Get-ADUser -Identity "UserInDomainB" -Server "domainB.com")  # добавить пользователя из другого домена в группу
+
+Get-ADTrust                                         # получить доверительные отношения
+Get-ADTrust -Identity "domain.com"
+
+New-ADObject -Server "otherdomain.com"              # указать сервер для целевого домена
+
+Get-ADUser -Server "dc.otherdomain.com" -Identity "username"  # запросить пользователя с указанного DC
+```
+
+## ✅ Шпаргалка для ежедневных задач
+```
+Подключение модуля                              Import-Module ActiveDirectory
+Поиск отключённых пользователей                Search-ADAccount -AccountDisabled -UsersOnly
+Поиск заблокированных пользователей            Search-ADAccount -LockedOut -UsersOnly
+Разблокировка пользователя                      Unlock-ADAccount -Identity "username"
+Сброс пароля                                    Set-ADAccountPassword -Identity "username" -Reset -NewPassword (ConvertTo-SecureString "NewPass" -AsPlainText -Force)
+Включение учётной записи                        Enable-ADAccount -Identity "username"
+Список членов группы                           Get-ADGroupMember -Identity "GroupName"
+Добавление пользователя в группу                Add-ADGroupMember -Identity "GroupName" -Members "username"
+Просмотр всех свойств пользователя              Get-ADUser -Identity "username" -Properties *
+Экспорт пользователей в CSV                     Get-ADUser -Filter * -Properties Name, Department, Title | Export-Csv -Path users.csv -NoTypeInformation
+Дата последнего входа пользователей             Get-ADUser -Filter * -Properties LastLogonDate | Select Name, LastLogonDate
+Поиск компьютеров по ОС                         Get-ADComputer -Filter "OperatingSystem -like '*Windows 10*'"
+Поиск групп без членов                          Get-ADGroup -Filter * -Properties Members | Where-Object {$_.Members.Count -eq 0}
+Создание OU                                      New-ADOrganizationalUnit -Name "NewOU" -Path "DC=domain,DC=com"
+Включение пользователя в группы через переменные $ADUser = Get-ADUser -Identity "username"
+$Groups = "Group1","Group2"
+Add-ADPrincipalGroupMembership -Identity $ADUser -MemberOf $Groups
+```
