@@ -1,16 +1,18 @@
-🐳 Полный список команд Docker (шпаргалка)
+# 🐳 Полный список команд Docker (шпаргалка)
 
-🔧 Управление сервисом Docker
+### 🔧 Управление сервисом Docker
 
+```
 sudo systemctl start docker      # запустить Docker
 sudo systemctl stop docker       # остановить Docker
 sudo systemctl restart docker    # перезапустить Docker
 sudo systemctl status docker     # статус Docker
 sudo systemctl enable docker     # автозагрузка
 sudo systemctl disable docker    # убрать из автозагрузки
+```
 
-📦 Управление образами (Images)
-
+## 📦 Управление образами (Images)
+```
 docker images                    # список образов
 docker image ls                  # список образов (альтернативный)
 docker pull nginx:latest         # скачать образ из реестра
@@ -25,9 +27,11 @@ docker load -i backup.tar        # загрузить образ из tar-фай
 docker tag myapp:latest myapp:v1 # создать тег для образа
 docker history nginx:latest      # показать историю слоёв образа
 docker inspect nginx:latest      # показать детальную информацию об образе
+```
 
-🚀 Управление контейнерами (Containers)
+## 🚀 Управление контейнерами (Containers)
 
+```
 docker ps                        # список запущенных контейнеров
 docker ps -a                     # список всех контейнеров
 docker run nginx:latest          # запустить контейнер из образа
@@ -48,9 +52,11 @@ docker pause container_name      # приостановить контейнер
 docker unpause container_name    # возобновить контейнер
 docker wait container_name       # ждать завершения контейнера
 docker rename old_name new_name  # переименовать контейнер
+```
 
-📝 Просмотр логов и информации
+## 📝 Просмотр логов и информации
 
+```
 docker logs container_name       # показать логи контейнера
 docker logs -f container_name    # следить за логами (follow)
 docker logs --tail 100 container_name   # последние 100 строк
@@ -66,16 +72,19 @@ docker events --filter event=start   # фильтровать события
 docker system df                 # использование дискового пространства
 docker system info               # информация о системе Docker
 docker version                   # версия Docker
+```
 
-🔄 Взаимодействие с контейнером
+## 🔄 Взаимодействие с контейнером
 
+```
 docker exec container_name ls    # выполнить команду в контейнере
 docker exec -it container_name bash   # открыть терминал внутри контейнера
 docker cp file.txt container_name:/path/   # скопировать файл в контейнер
 docker cp container_name:/path/file.txt . # скопировать файл из контейнера
 docker attach container_name     # подключиться к запущенному контейнеру
+```
 
-📂 Управление томами (Volumes)
+## 📂 Управление томами (Volumes)
 
 docker volume ls                 # список томов
 docker volume create volume_name # создать том
@@ -84,8 +93,8 @@ docker volume rm volume_name     # удалить том
 docker volume prune              # удалить неиспользуемые тома
 docker run -v volume_name:/path nginx  # использовать том
 
-🌐 Управление сетями (Networks)
-
+## 🌐 Управление сетями (Networks)
+```
 docker network ls                # список сетей
 docker network create mynet      # создать сеть
 docker network inspect mynet     # информация о сети
@@ -94,9 +103,10 @@ docker network prune             # удалить неиспользуемые �
 docker run --network mynet nginx # запустить контейнер в сети
 docker network connect mynet container_name   # подключить контейнер к сети
 docker network disconnect mynet container_name   # отключить контейнер от сети
+```
 
-🗑️ Очистка системы
-
+## 🗑️ Очистка системы
+```
 docker system prune              # удалить остановленные контейнеры, неиспользуемые сети, образы
 docker system prune -a           # удалить всё неиспользуемое (включая образы без тегов)
 docker system prune -f           # принудительная очистка без подтверждения
@@ -105,9 +115,11 @@ docker image prune               # удалить неиспользуемые �
 docker image prune -a            # удалить все неиспользуемые образы
 docker volume prune              # удалить неиспользуемые тома
 docker network prune             # удалить неиспользуемые сети
+```
 
-🏗️ Docker Compose
+## 🏗️ Docker Compose
 
+```
 docker-compose up                # запустить сервисы
 docker-compose up -d             # запустить в фоновом режиме
 docker-compose down              # остановить и удалить контейнеры
@@ -126,17 +138,19 @@ docker-compose exec service_name bash   # выполнить команду в �
 docker-compose config            # проверить и показать конфигурацию
 docker-compose config -q         # проверить конфигурацию (тихо)
 docker-compose up --scale web=3  # масштабировать сервис
+```
 
-🔐 Docker Registry
-
+### 🔐 Docker Registry
+```
 docker login                     # войти в реестр
 docker logout                    # выйти из реестра
 docker search nginx              # поиск образов в реестре
 docker pull nginx:latest         # скачать образ
 docker push username/repo:tag    # загрузить образ
+```
 
-📋 Dockerfile инструкции (для напоминания)
-
+## 📋 Dockerfile инструкции (для напоминания)
+```
 FROM ubuntu:22.04                # базовый образ
 RUN apt update && apt install -y nginx   # выполнить команду при сборке
 COPY ./app /app                  # скопировать файлы
@@ -149,19 +163,4 @@ CMD nginx -g daemon off;         # команда по умолчанию (shell
 ENTRYPOINT ["nginx"]             # точка входа (exec форма)
 USER www-data                    # пользователь для запуска
 VOLUME ["/data"]                 # создать том
-
-✅ Что означают нормальные значения
-
-Показатель                 Норма          Проблема
-контейнеры в docker ps     0-несколько    слишком много (утечка)
-docker ps -a               ожидаемое      неожиданно остановленные
-docker images              известные      много неиспользуемых образов
-место на диске docker system df < 80%       > 80% требуется очистка
-docker stats               CPU/память     перегрузка контейнера
-                           в норме
-
-📖 Источник
-
-Основано на официальной документации Docker CLI.
-Для более детального изучения: man docker
-или официальная документация: https://docs.docker.com/engine/reference/commandline/docker/
+```
